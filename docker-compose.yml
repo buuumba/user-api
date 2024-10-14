@@ -12,24 +12,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - nest-network
+    
 
-  app:
-    build: .
-    container_name: nest-app
-    restart: always
-    ports:
-      - "3000:3000"
-    depends_on:
-      - db
-    environment:
-      DATABASE_URL: postgres://admin:admin@db:5432/userdb 
-    networks:
-      - nest-network
+  
 
 volumes:
   postgres_data:
 
-networks:
-  nest-network:
+
