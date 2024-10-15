@@ -10,19 +10,26 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
+  // Метод для валидации пользователя при логине
   async validateUser(username: string, password: string): Promise<any> {
+    // Поиск пользователя по username
     const user = await this.userService.findByUsername(username);
+    // Если пользователь найден и пароль верен
     if (user && (await argon2.verify(user.password, password))) {
+      // Убираем пароль из объекта пользователя для безопасности
       const { password, ...result } = user;
-      return result;
+      return result; // Возвращаем данные пользователя без пароля
     }
-    return null;
+    return null; // Если пользователь не найден или пароль неверен
   }
 
+  // Метод для генерации JWT токена при успешном логине
   async login(user: any) {
+    // Формируем payload для токена, включающий username и id пользователя
     const payload = { username: user.username, sub: user.id };
+    // Возвращаем объект с access_token
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload), // Подписываем токен с использованием JWT сервиса
     };
   }
 }
