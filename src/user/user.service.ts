@@ -37,7 +37,9 @@ export class UserService {
       throw new Error('Password is required');
     }
 
+    // Хэшируем пароль перед сохранением
     const hashedPassword = await argon2.hash(createUserDto.password);
+    // Создаем нового пользователя, объединяя DTO и захэшированный пароль
     const user = this.userRepository.create({
       ...createUserDto,
       password: hashedPassword,
