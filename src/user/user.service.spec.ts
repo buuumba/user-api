@@ -17,7 +17,7 @@ describe('UserService', () => {
         UserService,
         {
           provide: getRepositoryToken(User),
-          useClass: Repository, // Mock TypeORM repository
+          useClass: Repository, //  Мок TypeORM репозитория
         },
       ],
     }).compile();
