@@ -18,29 +18,34 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  // Регистрация нового пользователя
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
     return this.userService.register(createUserDto);
   }
 
+  // Получение профиля текущего пользователя (доступно только авторизованным пользователям)
   @UseGuards(JwtAuthGuard)
   @Get('profile/my')
   getProfile(@Request() req) {
     return this.userService.findByUsername(req.user.username);
   }
 
+  // Обновление профиля текущего пользователя (требует авторизации)
   @UseGuards(JwtAuthGuard)
   @Patch('profile/my')
   updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.updateUser(req.user.userId, updateUserDto);
   }
 
+  // Удаление профиля текущего пользователя (требует авторизации)
   @UseGuards(JwtAuthGuard)
   @Delete('profile/my')
   deleteProfile(@Request() req) {
     return this.userService.deleteUser(req.user.userId);
   }
 
+  // Получение списка пользователей с поддержкой пагинации и фильтрации
   @UseGuards(JwtAuthGuard)
   @Get('users')
   getAllUsers(
