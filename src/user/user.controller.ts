@@ -1,5 +1,6 @@
 import {
   Body,
+  Query,
   Controller,
   Post,
   Get,
@@ -39,4 +40,15 @@ export class UserController {
   deleteProfile(@Request() req) {
     return this.userService.deleteUser(req.user.userId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('users')
+  getAllUsers(
+    @Query('page') page: number = 1, // Параметр для страницы (по умолчанию 1)
+    @Query('limit') limit: number = 10, // Параметр для лимита записей (по умолчанию 10)
+    @Query('username') username?: string // Параметр для фильтрации по логину
+  ) {
+    return this.userService.getAllUsers(page, limit, username);
+  }
 }
+
