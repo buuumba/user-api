@@ -47,9 +47,11 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  // Поиск пользователя по username
+  // Поиск пользователя по username, исключая удаленных
   async findByUsername(username: string): Promise<User> {
-    return this.userRepository.findOne({ where: { username } });
+    return this.userRepository.findOne({
+      where: { username, isDeleted: false },
+    });
   }
 
   // Обновление данных пользователя
@@ -57,7 +59,9 @@ export class UserService {
     userId: number,
     updateUserDto: UpdateUserDto
   ): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: userId, isDeleted: false },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -65,21 +69,26 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  // Удаление пользователя
+  // Удаление пользователя (soft delete)
   async deleteUser(userId: number): Promise<void> {
-    const result = await this.userRepository.delete(userId);
-    if (result.affected === 0) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
       throw new NotFoundException('User not found');
     }
+    user.isDeleted = true;
+    await this.userRepository.save(user);
   }
-  
-  // Получение всех пользователей с пагинацией и фильтрацией
+
+  // Получение всех активных пользователей с пагинацией и фильтрацией
   async getAllUsers(
     page: number,
     limit: number,
     username?: string
   ): Promise<any> {
     const query = this.userRepository.createQueryBuilder('user');
+
+    // Условие для исключения удаленных пользователей
+    query.where('user.isDeleted = :isDeleted', { isDeleted: false });
 
     // Если передан параметр для поиска по логину, добавляем фильтр
     if (username) {
@@ -92,6 +101,26 @@ export class UserService {
     query.skip((page - 1) * limit).take(limit);
 
     // Выполняем запрос с подсчетом общего количества пользователей
+    const [users, total] = await query.getManyAndCount();
+
+    return {
+      total,
+      page,
+      limit,
+      data: users,
+    };
+  }
+
+  async getDeletedUsers(page: number, limit: number): Promise<any> {
+    const query = this.userRepository.createQueryBuilder('user');
+
+    // Условие для поиска только удаленных пользователей
+    query.where('user.isDeleted = :isDeleted', { isDeleted: true });
+
+    // Пагинация
+    query.skip((page - 1) * limit).take(limit);
+
+    // Выполняем запрос с подсчетом общего количества удаленных пользователей
     const [users, total] = await query.getManyAndCount();
 
     return {

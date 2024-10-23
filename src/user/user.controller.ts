@@ -55,5 +55,15 @@ export class UserController {
   ) {
     return this.userService.getAllUsers(page, limit, username);
   }
+
+  // Получение списка удаленных пользователей (soft deleted)
+  @UseGuards(JwtAuthGuard)
+  @Get('deleted-users')
+  getDeletedUsers(
+    @Query('page') page: number = 1, // Параметр для страницы (по умолчанию 1)
+    @Query('limit') limit: number = 10 // Параметр для лимита записей (по умолчанию 10)
+  ) {
+    return this.userService.getDeletedUsers(page, limit);
+  }
 }
 
