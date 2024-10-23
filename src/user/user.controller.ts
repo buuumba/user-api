@@ -5,7 +5,6 @@ import {
   Post,
   Get,
   UseGuards,
-  Request,
   Patch,
   Delete,
 } from '@nestjs/common';
@@ -13,6 +12,7 @@ import { UserService } from '../user/user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from '../auth/decorators/user.decorator'
 
 @Controller('user')
 export class UserController {
@@ -27,22 +27,22 @@ export class UserController {
   // Получение профиля текущего пользователя (доступно только авторизованным пользователям)
   @UseGuards(JwtAuthGuard)
   @Get('profile/my')
-  getProfile(@Request() req) {
-    return this.userService.findByUsername(req.user.username);
+  getProfile(@User() user: any) {
+    return this.userService.findByUsername(user.username);
   }
 
   // Обновление профиля текущего пользователя (требует авторизации)
   @UseGuards(JwtAuthGuard)
   @Patch('profile/my')
-  async updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.updateUser(req.user.userId, updateUserDto);
+  async updateProfile(@User() user: any, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.updateUser(user.userId, updateUserDto);
   }
 
   // Удаление профиля текущего пользователя (требует авторизации)
   @UseGuards(JwtAuthGuard)
   @Delete('profile/my')
-  deleteProfile(@Request() req) {
-    return this.userService.deleteUser(req.user.userId);
+  deleteProfile(@User() user: any) {
+    return this.userService.deleteUser(user.userId);
   }
 
   // Получение списка пользователей с поддержкой пагинации и фильтрации
