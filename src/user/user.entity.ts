@@ -11,7 +11,10 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column({
+    type: 'citext',
+    unique: true,
+  })
   username: string;
 
   @Column({ unique: true })
