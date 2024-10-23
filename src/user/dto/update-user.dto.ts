@@ -5,6 +5,7 @@ import {
   MaxLength,
   IsInt,
   Min,
+  MinLength,
 } from 'class-validator';
 
 export class UpdateUserDto {

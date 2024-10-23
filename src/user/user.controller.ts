@@ -34,7 +34,7 @@ export class UserController {
   // Обновление профиля текущего пользователя (требует авторизации)
   @UseGuards(JwtAuthGuard)
   @Patch('profile/my')
-  updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+  async updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.updateUser(req.user.userId, updateUserDto);
   }
 
