@@ -6,17 +6,18 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { UserModule } from './user/user.module';
 
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT,
       username: 'admin',
       password: 'admin',
       database: 'userdb',
       autoLoadEntities: true,
-      synchronize: true, 
+      synchronize: true,
     }),
     UserModule,
     AuthModule,

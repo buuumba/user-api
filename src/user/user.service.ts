@@ -1,7 +1,7 @@
 import {
   Injectable,
   NotFoundException,
-  BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -28,15 +28,12 @@ export class UserService {
     });
 
     if (existingUser) {
-      throw new BadRequestException(
+      throw new ConflictException(
         'User with this username or email already exists'
       );
     }
 
-    if (!createUserDto.password) {
-      throw new Error('Password is required');
-    }
-
+  
     // Хэшируем пароль перед сохранением
     const hashedPassword = await argon2.hash(createUserDto.password);
     // Создаем нового пользователя, объединяя DTO и захэшированный пароль
