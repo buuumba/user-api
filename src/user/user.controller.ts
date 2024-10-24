@@ -12,9 +12,8 @@ import { UserService } from '../user/user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from '../auth/decorators/user.decorator';
-import { CurrentUser } from '../auth/decorators/current-user.interface';
-
+import { User } from '../decorators/user.decorator';
+import { CurrentUser } from '../decorators/current-user.interface'
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
