@@ -1,5 +1,17 @@
 version: '3'
 services:
+  minio:
+    image: minio/minio
+    command: server --console-address ":9001" /data
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio_storage:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+
   db:
     image: postgres:13
     container_name: db
@@ -9,14 +21,10 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: userdb
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    
-
-  
 
 volumes:
   postgres_data:
-
-
+  minio_storage:
