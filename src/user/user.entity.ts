@@ -4,7 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-} from 'typeorm';
+  OneToMany,
+} from "typeorm";
+import { Avatar } from "../avatar/avatar.entity";
 
 @Entity()
 export class User {
@@ -12,7 +14,7 @@ export class User {
   id: number;
 
   @Column({
-    type: 'citext',
+    type: "citext",
     unique: true,
   })
   username: string;
@@ -37,4 +39,7 @@ export class User {
 
   @Column({ default: false })
   isDeleted: boolean;
+
+  @OneToMany(() => Avatar, (avatar) => avatar.user)
+  avatars: Avatar[];
 }
