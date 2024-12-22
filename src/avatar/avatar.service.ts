@@ -7,9 +7,12 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Avatar } from "./avatar.entity";
 import { User } from "../user/user.entity";
+import * as Minio from "minio";
 
 @Injectable()
 export class AvatarService {
+  private readonly minioClient: Minio.Client;
+
   constructor(
     @InjectRepository(Avatar)
     private readonly avatarRepository: Repository<Avatar>,
