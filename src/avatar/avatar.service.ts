@@ -46,7 +46,7 @@ export class AvatarService {
   }
 
   /**
-   * Удаление аватара пользователя
+   * Удаление аватара пользователя.
    */
   async deleteAvatar(user: User, avatarId: number): Promise<void> {
     // Поиск аватара в базе данных
