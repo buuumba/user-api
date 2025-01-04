@@ -12,38 +12,33 @@ import {
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { AvatarService } from "./avatar.service";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { diskStorage } from "multer";
-import * as path from "path";
+import { IUploadedMulterFile } from "src/providers/files/s3/interfaces/upload-file.interface";
 
 @Controller("avatar")
 export class AvatarController {
   constructor(private readonly avatarService: AvatarService) {}
 
+  /**
+   * Загрузка аватара пользователя.
+   */
   @UseGuards(JwtAuthGuard)
   @Post()
-  @UseInterceptors(
-    FileInterceptor("file", {
-      storage: diskStorage({
-        destination: "./uploads", // Локальная папка для хранения
-        filename: (req, file, cb) => {
-          const uniqueSuffix =
-            Date.now() + "-" + Math.round(Math.random() * 1e9);
-          cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`);
-        },
-      }),
-      limits: { fileSize: 10 * 1024 * 1024 }, // Ограничение: 10 MB
-    }),
-  )
+  @UseInterceptors(FileInterceptor("file"))
   async uploadAvatar(
     @Request() req,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: IUploadedMulterFile,
   ) {
     if (!file) {
       throw new BadRequestException("File is required");
     }
-    return this.avatarService.uploadAvatar(req.user, file.filename);
+
+    // Передача файла и пользователя в сервис
+    return this.avatarService.uploadAvatar(req.user, file, req.user.accountId);
   }
 
+  /**
+   * Удаление аватара пользователя.
+   */
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
   async deleteAvatar(@Request() req, @Param("id") id: number) {

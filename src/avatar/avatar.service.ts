@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Avatar } from "./avatar.entity";
@@ -8,6 +13,8 @@ import { IUploadedMulterFile } from "src/providers/files/s3/interfaces/upload-fi
 
 @Injectable()
 export class AvatarService {
+  private readonly logger = new Logger(AvatarService.name);
+
   constructor(
     @InjectRepository(Avatar)
     private readonly avatarRepository: Repository<Avatar>,
@@ -22,16 +29,32 @@ export class AvatarService {
     file: IUploadedMulterFile,
     accountId: string,
   ): Promise<Avatar> {
+    // Проверяем количество активных аватаров
+    const activeAvatars = await this.avatarRepository.count({
+      where: { user, isActive: true },
+    });
+
+    if (activeAvatars >= 5) {
+      throw new BadRequestException("You can have up to 5 active avatars.");
+    }
+
     // Генерация уникального имени файла
     const fileName = `${Date.now()}-${file.originalname}`;
 
-    // Загрузка файла через fileService
-    const { path } = await this.fileService.uploadFile({
-      userId: user.id,
-      fileBuffer: file.buffer,
-      fileName,
-      accountId,
-    });
+    let path: string;
+    try {
+      // Загрузка файла через fileService
+      const result = await this.fileService.uploadFile({
+        userId: user.id,
+        fileBuffer: file.buffer,
+        fileName,
+        accountId,
+      });
+      path = result.path;
+    } catch (error) {
+      this.logger.error("Failed to upload file to file service", error.stack);
+      throw new BadRequestException("Failed to upload file.");
+    }
 
     // Создание записи аватара в базе данных
     const avatar = this.avatarRepository.create({
@@ -42,6 +65,7 @@ export class AvatarService {
 
     await this.avatarRepository.save(avatar);
 
+    this.logger.log(`Avatar uploaded successfully for user ${user.id}`);
     return avatar;
   }
 
@@ -58,11 +82,20 @@ export class AvatarService {
       throw new NotFoundException("Avatar not found or already deleted.");
     }
 
-    // Удаление файла через fileService
-    await this.fileService.removeFile({ path: avatar.filename });
+    try {
+      // Удаление файла через fileService
+      await this.fileService.removeFile({ path: avatar.filename });
+    } catch (error) {
+      this.logger.error("Failed to remove file from file service", error.stack);
+      throw new BadRequestException("Failed to remove file.");
+    }
 
     // Пометка аватара как неактивного (soft delete)
     avatar.isActive = false;
     await this.avatarRepository.save(avatar);
+
+    this.logger.log(
+      `Avatar with id ${avatarId} deleted successfully for user ${user.id}`,
+    );
   }
 }

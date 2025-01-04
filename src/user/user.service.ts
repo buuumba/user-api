@@ -2,19 +2,19 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import * as argon2 from 'argon2';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { User } from "./user.entity";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import * as argon2 from "argon2";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
   ) {}
 
   // Регистрация пользователя
@@ -29,11 +29,10 @@ export class UserService {
 
     if (existingUser) {
       throw new ConflictException(
-        'User with this username or email already exists'
+        "User with this username or email already exists",
       );
     }
 
-  
     // Хэшируем пароль перед сохранением
     const hashedPassword = await argon2.hash(createUserDto.password);
     // Создаем нового пользователя, объединяя DTO и захэшированный пароль
@@ -54,13 +53,13 @@ export class UserService {
   // Обновление данных пользователя
   async updateUser(
     userId: number,
-    updateUserDto: UpdateUserDto
+    updateUserDto: UpdateUserDto,
   ): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id: userId, isDeleted: false },
     });
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
     Object.assign(user, updateUserDto);
     return this.userRepository.save(user);
@@ -70,7 +69,7 @@ export class UserService {
   async deleteUser(userId: number): Promise<void> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
     user.isDeleted = true;
     await this.userRepository.save(user);
@@ -80,16 +79,16 @@ export class UserService {
   async getAllUsers(
     page: number,
     limit: number,
-    username?: string
+    username?: string,
   ): Promise<any> {
-    const query = this.userRepository.createQueryBuilder('user');
+    const query = this.userRepository.createQueryBuilder("user");
 
     // Условие для исключения удаленных пользователей
-    query.where('user.isDeleted = :isDeleted', { isDeleted: false });
+    query.where("user.isDeleted = :isDeleted", { isDeleted: false });
 
     // Если передан параметр для поиска по логину, добавляем фильтр
     if (username) {
-      query.where('user.username LIKE :username', {
+      query.where("user.username LIKE :username", {
         username: `%${username}%`,
       });
     }
@@ -109,10 +108,10 @@ export class UserService {
   }
 
   async getDeletedUsers(page: number, limit: number): Promise<any> {
-    const query = this.userRepository.createQueryBuilder('user');
+    const query = this.userRepository.createQueryBuilder("user");
 
     // Условие для поиска только удаленных пользователей
-    query.where('user.isDeleted = :isDeleted', { isDeleted: true });
+    query.where("user.isDeleted = :isDeleted", { isDeleted: true });
 
     // Пагинация
     query.skip((page - 1) * limit).take(limit);
