@@ -3,10 +3,7 @@ import { IsNotEmpty, IsString } from "class-validator";
 import { IUploadedMulterFile } from "../interfaces/upload-file.interface";
 
 export class UploadFilePayloadDto {
-  userId: number;
-  fileBuffer: Buffer;
-  fileName: string;
-  accountId: string;
+  readonly accountId: string;
 
   @ApiProperty()
   @IsNotEmpty()

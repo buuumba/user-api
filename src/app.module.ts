@@ -6,7 +6,7 @@ import { PassportModule } from "@nestjs/passport";
 import { JwtStrategy } from "./auth/jwt.strategy";
 import { UserModule } from "./user/user.module";
 import { ConfigModule } from "@nestjs/config";
-import { ProvidersModule } from "./providers/providers.module";
+import { FilesModule } from "./providers/files/files.module";
 import { AvatarModule } from "./avatar/avatar.module";
 
 @Module({
@@ -30,7 +30,7 @@ import { AvatarModule } from "./avatar/avatar.module";
       signOptions: { expiresIn: "1h" },
     }),
     AuthModule,
-    ProvidersModule,
+    FilesModule,
     AvatarModule,
   ],
   providers: [JwtStrategy],

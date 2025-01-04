@@ -43,12 +43,11 @@ export class AvatarService {
 
     let path: string;
     try {
-      // Загрузка файла через fileService
       const result = await this.fileService.uploadFile({
-        userId: user.id,
-        fileBuffer: file.buffer,
-        fileName,
-        accountId,
+        file, // Передаём весь объект файла
+        folder: "avatars", // Папка для хранения файлов
+        name: fileName, // Уникальное имя файла
+        accountId, // ID аккаунта
       });
       path = result.path;
     } catch (error) {
