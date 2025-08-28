@@ -1,9 +1,13 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import {
+  Injectable,
+  ExecutionContext,
+  UnauthorizedException,
+} from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
 
 @Injectable()
 // Кастомный Guard для защиты маршрутов с использованием JWT
-export class JwtAuthGuard extends AuthGuard('jwt') {
+export class JwtAuthGuard extends AuthGuard("jwt") {
   canActivate(context: ExecutionContext) {
     // Вызов родительского метода для стандартной логики JWT Guard
     return super.canActivate(context);

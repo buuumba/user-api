@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
-import * as argon2 from 'argon2';
+import { Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { UserService } from "../user/user.service";
+import * as argon2 from "argon2";
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
 
   // Метод для валидации пользователя при логине
@@ -27,7 +27,7 @@ export class AuthService {
   async login(user: any) {
     // Формируем payload для токена, включающий username и id пользователя
     const payload = { username: user.username, sub: user.id };
-    // Возвращаем объект с access_token
+    // Возвращаем объект с access_token (expiresIn уже настроен в JwtModule)
     return {
       access_token: this.jwtService.sign(payload), // Подписываем токен с использованием JWT сервиса
     };

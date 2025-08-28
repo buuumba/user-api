@@ -1,9 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "./auth/auth.module";
-import { JwtModule } from "@nestjs/jwt";
-import { PassportModule } from "@nestjs/passport";
-import { JwtStrategy } from "./auth/jwt.strategy";
 import { UserModule } from "./user/user.module";
 import { ConfigModule } from "@nestjs/config";
 import { FilesModule } from "./providers/files/files.module";
@@ -11,7 +8,7 @@ import { AvatarModule } from "./avatar/avatar.module";
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: "postgres",
       host: process.env.DB_HOST,
@@ -24,15 +21,8 @@ import { AvatarModule } from "./avatar/avatar.module";
     }),
     UserModule,
     AuthModule,
-    PassportModule,
-    JwtModule.register({
-      secret: "your_secret_key",
-      signOptions: { expiresIn: "1h" },
-    }),
-    AuthModule,
     FilesModule,
     AvatarModule,
   ],
-  providers: [JwtStrategy],
 })
 export class AppModule {}
