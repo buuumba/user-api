@@ -11,7 +11,7 @@ import {
 
 import { UserService } from "../user/user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "../decorators/user.decorator";
 import { CurrentUser } from "../decorators/current-user.interface";
