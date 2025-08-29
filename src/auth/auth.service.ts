@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { UserService } from "../user/user.service";
 import * as argon2 from "argon2";
+import { JWT_CONFIG } from "./constants/jwt.constants";
 
 @Injectable()
 export class AuthService {
@@ -27,9 +28,11 @@ export class AuthService {
   async login(user: any) {
     // Формируем payload для токена, включающий username и id пользователя
     const payload = { username: user.username, sub: user.id };
-    // Возвращаем объект с access_token (expiresIn уже настроен в JwtModule)
+    // Возвращаем объект с access_token
     return {
-      access_token: this.jwtService.sign(payload), // Подписываем токен с использованием JWT сервиса
+      access_token: this.jwtService.sign(payload, {
+        expiresIn: JWT_CONFIG.expiresIn,
+      }), // Подписываем токен с использованием JWT сервиса
     };
   }
 }
