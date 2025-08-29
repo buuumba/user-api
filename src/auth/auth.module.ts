@@ -5,25 +5,15 @@ import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { JwtStrategy } from "./jwt.strategy";
 import { AuthController } from "./auth.controller";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import JWT_CONFIG from "./constants/jwt.constants";
 
 @Module({
   imports: [
     UserModule,
     PassportModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const secret = configService.get<string>("JWT_SECRET");
-        if (!secret) {
-          throw new Error("JWT_SECRET environment variable is not defined");
-        }
-        return {
-          secret,
-          signOptions: { expiresIn: "60m" },
-        };
-      },
+    JwtModule.register({
+      secret: JWT_CONFIG.secret,
+      signOptions: { expiresIn: JWT_CONFIG.expiresIn },
     }),
   ],
   providers: [AuthService, JwtStrategy],
