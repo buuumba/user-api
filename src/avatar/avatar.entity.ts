@@ -5,10 +5,10 @@ import {
   ManyToOne,
   DeleteDateColumn,
   CreateDateColumn,
-} from "typeorm";
-import { User } from "../user/user.entity";
+} from 'typeorm';
+import { User } from '../user/entities/user.entity';
 
-@Entity("avatars")
+@Entity('avatars')
 export class Avatar {
   @PrimaryGeneratedColumn()
   id: number;
@@ -19,7 +19,7 @@ export class Avatar {
   @Column({ default: true })
   isActive: boolean; // Статус активности
 
-  @ManyToOne(() => User, (user) => user.avatars, { onDelete: "CASCADE" })
+  @ManyToOne(() => User, (user) => user.avatars, { onDelete: 'CASCADE' })
   user: User; // Связь с пользователем
 
   @CreateDateColumn()
