@@ -1,38 +1,35 @@
-import { Injectable } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { UserService } from "../user/user.service";
-import * as argon2 from "argon2";
-import { JWT_CONFIG } from "./constants/jwt.constants";
+import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from '../user/user.service';
+import * as argon2 from 'argon2';
+
+import { LoginResponse } from './interfaces/login-response.interface';
+import { ValidatedUser } from './interfaces/validated-user.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
-  // Метод для валидации пользователя при логине
-  async validateUser(username: string, password: string): Promise<any> {
-    // Поиск пользователя по username
+  async validateUser(
+    username: string,
+    password: string
+  ): Promise<ValidatedUser | null> {
     const user = await this.userService.findByUsername(username);
-    // Если пользователь найден и пароль верен
     if (user && (await argon2.verify(user.password, password))) {
-      // Убираем пароль из объекта пользователя для безопасности
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
-      return result; // Возвращаем данные пользователя без пароля
+      return result;
     }
-    return null; // Если пользователь не найден или пароль неверен
+    return null;
   }
 
-  // Метод для генерации JWT токена при успешном логине
-  async login(user: any) {
-    // Формируем payload для токена, включающий username и id пользователя
+  async login(user: ValidatedUser): Promise<LoginResponse> {
     const payload = { username: user.username, sub: user.id };
-    // Возвращаем объект с access_token
     return {
-      access_token: this.jwtService.sign(payload, {
-        expiresIn: JWT_CONFIG.expiresIn,
-      }), // Подписываем токен с использованием JWT сервиса
+      access_token: this.jwtService.sign(payload),
     };
   }
 }
