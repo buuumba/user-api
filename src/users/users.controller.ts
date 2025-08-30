@@ -9,7 +9,7 @@ import {
   Delete,
 } from '@nestjs/common';
 
-import { UserService } from '../user/user.service';
+import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';

@@ -6,7 +6,7 @@ import {
   DeleteDateColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { User } from '../user/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 
 @Entity('avatars')
 export class Avatar {

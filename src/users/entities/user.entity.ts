@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { Avatar } from '../../avatar/avatar.entity';
+import { Avatar } from '../../avatars/avatar.entity';
 
 @Entity()
 export class User {

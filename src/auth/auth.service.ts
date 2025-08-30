@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
+import { UserService } from '../users/users.service';
 import * as argon2 from 'argon2';
 
 import { LoginResponse } from './interfaces/login-response.interface';

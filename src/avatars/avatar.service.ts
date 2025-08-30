@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Avatar } from './avatar.entity';
-import { User } from '../user/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { IFileService } from 'src/providers/files/files.adapter';
 import { IUploadedMulterFile } from 'src/providers/files/s3/interfaces/upload-file.interface';
 
