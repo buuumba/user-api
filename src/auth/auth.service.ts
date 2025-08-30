@@ -5,6 +5,8 @@ import * as argon2 from 'argon2';
 
 import { LoginResponse } from './interfaces/login-response.interface';
 import { ValidatedUser } from './interfaces/validated-user.interface';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +26,10 @@ export class AuthService {
       return result;
     }
     return null;
+  }
+
+  async register(createUserDto: CreateUserDto): Promise<User> {
+    return this.userService.register(createUserDto);
   }
 
   async login(user: ValidatedUser): Promise<LoginResponse> {

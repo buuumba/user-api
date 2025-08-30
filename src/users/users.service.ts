@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PAGINATION_DEFAULTS } from './constants/pagination.constants';
 import * as argon2 from 'argon2';
 
 @Injectable()
@@ -55,6 +56,37 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
+
+    // Проверяем уникальность username и email перед обновлением
+    if (updateUserDto.username || updateUserDto.email) {
+      const whereConditions = [];
+
+      if (updateUserDto.username && updateUserDto.username !== user.username) {
+        whereConditions.push({ username: updateUserDto.username });
+      }
+
+      if (updateUserDto.email && updateUserDto.email !== user.email) {
+        whereConditions.push({ email: updateUserDto.email });
+      }
+
+      if (whereConditions.length > 0) {
+        const conflictUser = await this.userRepository.findOne({
+          where: whereConditions,
+        });
+
+        if (conflictUser) {
+          throw new ConflictException(
+            'User with this username or email already exists'
+          );
+        }
+      }
+    }
+
+    // Хешируем пароль если он обновляется
+    if (updateUserDto.password) {
+      updateUserDto.password = await argon2.hash(updateUserDto.password);
+    }
+
     Object.assign(user, updateUserDto);
     return this.userRepository.save(user);
   }
@@ -69,46 +101,46 @@ export class UserService {
   }
 
   async getAllUsers(
-    page: number,
-    limit: number,
+    page: number = PAGINATION_DEFAULTS.PAGE,
+    limit: number = PAGINATION_DEFAULTS.LIMIT,
     username?: string
-  ): Promise<any> {
+  ): Promise<{
+    total: number;
+    page: number;
+    limit: number;
+    data: Omit<User, 'password'>[];
+  }> {
     const query = this.userRepository.createQueryBuilder('user');
 
     query.where('user.isDeleted = :isDeleted', { isDeleted: false });
 
     if (username) {
-      query.where('user.username LIKE :username', {
+      query.andWhere('user.username LIKE :username', {
         username: `%${username}%`,
       });
     }
 
-    query.skip((page - 1) * limit).take(limit);
+    // Ограничиваем лимит максимальным значением
+    const safeLimit = Math.min(limit, PAGINATION_DEFAULTS.MAX_LIMIT);
+
+    query.skip((page - 1) * safeLimit).take(safeLimit);
 
     const [users, total] = await query.getManyAndCount();
+
+    // Убираем пароли из ответа для безопасности
+    const safeUsers = users.map(({ password: _, ...user }) => user);
 
     return {
       total,
       page,
-      limit,
-      data: users,
+      limit: safeLimit,
+      data: safeUsers,
     };
   }
 
-  async getDeletedUsers(page: number, limit: number): Promise<any> {
-    const query = this.userRepository.createQueryBuilder('user');
-
-    query.where('user.isDeleted = :isDeleted', { isDeleted: true });
-
-    query.skip((page - 1) * limit).take(limit);
-
-    const [users, total] = await query.getManyAndCount();
-
-    return {
-      total,
-      page,
-      limit,
-      data: users,
-    };
+  // Метод для безопасного возврата пользователя без пароля
+  sanitizeUser(user: User): Omit<User, 'password'> {
+    const { password: _, ...sanitizedUser } = user;
+    return sanitizedUser;
   }
 }
