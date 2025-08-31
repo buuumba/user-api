@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from '../users.controller';
 import { UserService } from '../users.service';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { CreateUserDto } from '../../auth/dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { NotFoundException } from '@nestjs/common';
 
@@ -17,7 +15,6 @@ describe('UserController', () => {
         {
           provide: UserService,
           useValue: {
-            register: jest.fn(),
             findByUsername: jest.fn(),
             updateUser: jest.fn(),
             deleteUser: jest.fn(),
@@ -33,25 +30,6 @@ describe('UserController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-  });
-
-  describe('register', () => {
-    it('should call UserService register method', async () => {
-      const createUserDto: CreateUserDto = {
-        username: 'test',
-        email: 'test@test.com',
-        password: 'password',
-        age: 25,
-        bio: 'Test user',
-      };
-
-      const result = { id: 1, ...createUserDto };
-      jest.spyOn(service, 'register').mockResolvedValue(result);
-
-      const response = await controller.register(createUserDto);
-      expect(service.register).toHaveBeenCalledWith(createUserDto);
-      expect(response).toEqual(result);
-    });
   });
 
   describe('getProfile', () => {

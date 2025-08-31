@@ -2,7 +2,6 @@ import {
   Body,
   Query,
   Controller,
-  Post,
   Get,
   UseGuards,
   Patch,
@@ -10,28 +9,29 @@ import {
 } from '@nestjs/common';
 
 import { UserService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
+
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUsersQueryDto } from './dto/get-users-query.dto';
+import { UserResponseDto } from './dto/user-response.dto';
+import { PaginatedUsersResponseDto } from './dto/paginated-users-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorator';
 import { CurrentUser } from './interfaces/current-user.interface';
+import {
+  toUserResponseDto,
+  toUserResponseDtoSafe,
+  toPaginatedUsersResponse,
+} from './utils/user-mapper.utils';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('register')
-  async register(@Body() createUserDto: CreateUserDto) {
-    const user = await this.userService.register(createUserDto);
-    return this.userService.sanitizeUser(user);
-  }
-
   @UseGuards(JwtAuthGuard)
   @Get('profile/my')
-  async getProfile(@User() user: CurrentUser) {
+  async getProfile(@User() user: CurrentUser): Promise<UserResponseDto | null> {
     const userEntity = await this.userService.findByUsername(user.username);
-    return this.userService.sanitizeUser(userEntity);
+    return toUserResponseDtoSafe(userEntity);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -39,12 +39,12 @@ export class UserController {
   async updateProfile(
     @User() user: CurrentUser,
     @Body() updateUserDto: UpdateUserDto
-  ) {
+  ): Promise<UserResponseDto> {
     const updatedUser = await this.userService.updateUser(
       user.id,
       updateUserDto
     );
-    return this.userService.sanitizeUser(updatedUser);
+    return toUserResponseDto(updatedUser);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -55,11 +55,14 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllUsers(@Query() query: GetUsersQueryDto) {
-    return this.userService.getAllUsers(
+  async getAllUsers(
+    @Query() query: GetUsersQueryDto
+  ): Promise<PaginatedUsersResponseDto> {
+    const result = await this.userService.getAllUsers(
       query.page,
       query.limit,
       query.username
     );
+    return toPaginatedUsersResponse(result);
   }
 }

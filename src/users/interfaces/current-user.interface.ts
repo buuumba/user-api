@@ -6,5 +6,4 @@ export interface CurrentUser {
   bio: string;
   created_at: Date;
   updated_at: Date;
-  isDeleted: boolean;
 }

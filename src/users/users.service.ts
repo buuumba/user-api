@@ -6,9 +6,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PAGINATION_DEFAULTS } from './constants/pagination.constants';
+import { PaginatedResult } from './interfaces/paginated-result.interface';
 import * as argon2 from 'argon2';
 
 @Injectable()
@@ -18,31 +18,26 @@ export class UserService {
     private readonly userRepository: Repository<User>
   ) {}
 
-  async register(createUserDto: CreateUserDto): Promise<User> {
-    const existingUser = await this.userRepository.findOne({
-      where: [
-        { username: createUserDto.username },
-        { email: createUserDto.email },
-      ],
-    });
-
-    if (existingUser) {
-      throw new ConflictException(
-        'User with this username or email already exists'
-      );
-    }
-
-    const hashedPassword = await argon2.hash(createUserDto.password);
-    const user = this.userRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
-    });
-    return this.userRepository.save(user);
-  }
-
-  async findByUsername(username: string): Promise<User> {
+  async findByUsername(username: string): Promise<User | null> {
     return this.userRepository.findOne({
       where: { username, isDeleted: false },
+    });
+  }
+
+  async findByUsernameWithPassword(username: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { username, isDeleted: false },
+      select: [
+        'id',
+        'username',
+        'email',
+        'password',
+        'age',
+        'bio',
+        'created_at',
+        'updated_at',
+        'isDeleted',
+      ],
     });
   }
 
@@ -57,7 +52,6 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    // Проверяем уникальность username и email перед обновлением
     if (updateUserDto.username || updateUserDto.email) {
       const whereConditions = [];
 
@@ -82,7 +76,6 @@ export class UserService {
       }
     }
 
-    // Хешируем пароль если он обновляется
     if (updateUserDto.password) {
       updateUserDto.password = await argon2.hash(updateUserDto.password);
     }
@@ -104,12 +97,7 @@ export class UserService {
     page: number = PAGINATION_DEFAULTS.PAGE,
     limit: number = PAGINATION_DEFAULTS.LIMIT,
     username?: string
-  ): Promise<{
-    total: number;
-    page: number;
-    limit: number;
-    data: Omit<User, 'password'>[];
-  }> {
+  ): Promise<PaginatedResult> {
     const query = this.userRepository.createQueryBuilder('user');
 
     query.where('user.isDeleted = :isDeleted', { isDeleted: false });
@@ -120,27 +108,17 @@ export class UserService {
       });
     }
 
-    // Ограничиваем лимит максимальным значением
     const safeLimit = Math.min(limit, PAGINATION_DEFAULTS.MAX_LIMIT);
 
     query.skip((page - 1) * safeLimit).take(safeLimit);
 
     const [users, total] = await query.getManyAndCount();
 
-    // Убираем пароли из ответа для безопасности
-    const safeUsers = users.map(({ password: _, ...user }) => user);
-
     return {
+      data: users,
       total,
       page,
       limit: safeLimit,
-      data: safeUsers,
     };
-  }
-
-  // Метод для безопасного возврата пользователя без пароля
-  sanitizeUser(user: User): Omit<User, 'password'> {
-    const { password: _, ...sanitizedUser } = user;
-    return sanitizedUser;
   }
 }
