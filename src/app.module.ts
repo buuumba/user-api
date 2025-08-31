@@ -4,7 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { FilesModule } from './providers/files/files.module';
-import { AvatarModule } from './avatars/avatar.module';
+import { AvatarsModule } from './avatars/avatars.module';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { AvatarModule } from './avatars/avatar.module';
     UserModule,
     AuthModule,
     FilesModule,
-    AvatarModule,
+    AvatarsModule,
   ],
 })
 export class AppModule {}
