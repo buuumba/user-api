@@ -18,7 +18,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('User API')
     .setDescription(
-      'API для пользователей (JWT аутентификация, профили, аватары). В будущем — балансы и уведомления.'
+      'API для пользователей (JWT аутентификация, профили, аватары). В будущем - балансы и уведомления.'
     )
     .setVersion('1.0')
     .addBearerAuth(
@@ -30,7 +30,7 @@ async function bootstrap() {
         description: 'Enter JWT token',
         in: 'header',
       },
-      'JWT-auth' // Имя схемы для ссылки
+      'JWT-auth'
     )
     .build();
 
