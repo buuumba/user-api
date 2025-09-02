@@ -1,29 +1,27 @@
-import { Module } from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { UserModule } from "../user/user.module";
-import { JwtModule } from "@nestjs/jwt";
-import { PassportModule } from "@nestjs/passport";
-import { JwtStrategy } from "./jwt.strategy";
-import { AuthController } from "./auth.controller";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthService } from './auth.service';
+import { UserModule } from '../users/users.module';
+import { User } from '../users/entities/user.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([User]),
     UserModule,
     PassportModule,
+    ConfigModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '60m' },
+      }),
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const secret = configService.get<string>("JWT_SECRET");
-        if (!secret) {
-          throw new Error("JWT_SECRET environment variable is not defined");
-        }
-        return {
-          secret,
-          signOptions: { expiresIn: "60m" },
-        };
-      },
     }),
   ],
   providers: [AuthService, JwtStrategy],

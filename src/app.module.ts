@@ -1,16 +1,18 @@
-import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { AuthModule } from "./auth/auth.module";
-import { UserModule } from "./user/user.module";
-import { ConfigModule } from "@nestjs/config";
-import { FilesModule } from "./providers/files/files.module";
-import { AvatarModule } from "./avatar/avatar.module";
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './users/users.module';
+import { ConfigModule } from '@nestjs/config';
+import { FilesModule } from './providers/files/files.module';
+import { AvatarsModule } from './avatars/avatars.module';
+import { AppCacheModule } from './cache/cache.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    AppCacheModule,
     TypeOrmModule.forRoot({
-      type: "postgres",
+      type: 'postgres',
       host: process.env.DB_HOST,
       port: +process.env.DB_PORT,
       username: process.env.DB_USERNAME,
@@ -22,7 +24,7 @@ import { AvatarModule } from "./avatar/avatar.module";
     UserModule,
     AuthModule,
     FilesModule,
-    AvatarModule,
+    AvatarsModule,
   ],
 })
 export class AppModule {}

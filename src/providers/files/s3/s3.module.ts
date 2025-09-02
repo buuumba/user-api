@@ -1,8 +1,8 @@
-import * as AWS from "@aws-sdk/client-s3";
-import { Module } from "@nestjs/common";
+import * as AWS from '@aws-sdk/client-s3';
+import { Module } from '@nestjs/common';
 
-import { S3Lib } from "./constants/do-spaces-service-lib.constant";
-import { S3Service } from "./s3.service";
+import { S3Lib } from './constants/do-spaces-service-lib.constant';
+import { S3Service } from './s3.service';
 
 @Module({
   providers: [
@@ -12,11 +12,11 @@ import { S3Service } from "./s3.service";
       useFactory: async () => {
         // TODO: укажи только accessKeyId, secretAccessKey
         return new AWS.S3({
-          endpoint: "http://127.0.0.1:9000",
-          region: "ru-central1",
+          endpoint: 'http://127.0.0.1:9000',
+          region: 'ru-central1',
           credentials: {
-            accessKeyId: "UQbHKTSlftwXVMYTVqRO",
-            secretAccessKey: "IRwVqP9CTKtUWoTsJSD5xN4GMapsZJlBU63G1bw4",
+            accessKeyId: 'minioadmin',
+            secretAccessKey: 'minioadmin',
           },
         });
       },
