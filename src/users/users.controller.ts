@@ -6,7 +6,9 @@ import {
   UseGuards,
   Patch,
   Delete,
+  UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import {
   ApiTags,
   ApiOperation,
@@ -34,6 +36,7 @@ import {
   toUserResponseDtoSafe,
   toPaginatedUsersResponse,
 } from './utils/user-mapper.utils';
+import { ProfileCacheInterceptor } from 'src/cache/interceptors/profile-cache.interceptor';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT-Auth')
@@ -43,6 +46,8 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile/my')
+  @UseInterceptors(ProfileCacheInterceptor)
+  @CacheTTL(30)
   @ApiOperation({
     summary: 'Получить профиль текущего пользователя',
     description: 'Возвращает профиль аутентифицированного пользователя',
@@ -101,6 +106,9 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
+  @UseInterceptors(CacheInterceptor)
+  @CacheKey('user-list')
+  @CacheTTL(30)
   @ApiOperation({
     summary: 'Получить всех пользователей',
     description:

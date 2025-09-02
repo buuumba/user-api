@@ -5,10 +5,12 @@ import { UserModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { FilesModule } from './providers/files/files.module';
 import { AvatarsModule } from './avatars/avatars.module';
+import { AppCacheModule } from './cache/cache.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    AppCacheModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
