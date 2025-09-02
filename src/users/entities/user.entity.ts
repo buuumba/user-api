@@ -31,6 +31,18 @@ export class User {
   @Column({ length: 1000 })
   bio: string;
 
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    default: 0.0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
+  balance: number;
+
   @CreateDateColumn()
   created_at: Date;
 

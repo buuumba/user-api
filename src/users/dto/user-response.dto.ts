@@ -41,6 +41,14 @@ export class UserResponseDto {
   bio: string;
 
   @ApiProperty({
+    description: 'Баланс пользователя в долларах',
+    example: 150.75,
+    type: 'number',
+  })
+  @Expose()
+  balance: number;
+
+  @ApiProperty({
     description: 'Дата создания профиля пользователя',
     example: '2025-08-31T09:18:00.702Z',
     type: 'string',

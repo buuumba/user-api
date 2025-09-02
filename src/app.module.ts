@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { FilesModule } from './providers/files/files.module';
 import { AvatarsModule } from './avatars/avatars.module';
 import { AppCacheModule } from './cache/cache.module';
+import { BalanceModule } from './balance/balance.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AppCacheModule } from './cache/cache.module';
     AuthModule,
     FilesModule,
     AvatarsModule,
+    BalanceModule,
   ],
 })
 export class AppModule {}
