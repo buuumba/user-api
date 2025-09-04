@@ -55,7 +55,6 @@ S3_BUCKET=avatars
 ## API
 
 - **Swagger**: http://localhost:3000/api
-- **Health**: http://localhost:3000/health
 
 ### Основные эндпоинты
 
