@@ -3,7 +3,11 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as dotenv from 'dotenv';
-import { initializeTransactionalContext } from 'typeorm-transactional';
+import {
+  initializeTransactionalContext,
+  addTransactionalDataSource,
+} from 'typeorm-transactional';
+import { DataSource } from 'typeorm';
 
 dotenv.config();
 
@@ -11,6 +15,10 @@ async function bootstrap() {
   initializeTransactionalContext();
 
   const app = await NestFactory.create(AppModule);
+
+  const dataSource = app.get(DataSource);
+  addTransactionalDataSource(dataSource);
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

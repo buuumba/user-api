@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Logger } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -15,12 +15,17 @@ import { TransferMoneyDto } from './dto/transfer-money.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorator';
 import { CurrentUser } from '../users/interfaces/current-user.interface';
+import { LoggingUtils } from '../common/utils/logging.utils';
 
 @ApiTags('Balance')
 @ApiBearerAuth('JWT-Auth')
 @Controller('balance')
 export class BalanceController {
-  constructor(private readonly balanceService: BalanceService) {}
+  private readonly logger = new Logger(BalanceController.name);
+
+  constructor(private readonly balanceService: BalanceService) {
+    this.logger.log('BalanceController initialized');
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('transfer')
@@ -47,16 +52,42 @@ export class BalanceController {
     description:
       'Недостаточно средств, некорректная сумма или попытка перевода самому себе',
   })
-  @ApiUnauthorizedResponse({ description: 'Требуется авторизация' })
+  @ApiUnauthorizedResponse({ description: 'Неверные учетные данные' })
   @ApiNotFoundResponse({ description: 'Получатель не найден' })
   async transferMoney(
     @User() user: CurrentUser,
     @Body() transferDto: TransferMoneyDto
   ): Promise<{ message: string }> {
-    await this.balanceService.transferMoney(user.id, transferDto);
-    return {
-      message: `Successfully transferred $${transferDto.amount} to user ID ${transferDto.recipientId}`,
-    };
+    LoggingUtils.logOperation(
+      this.logger,
+      'Transfer Request',
+      `POST /balance/transfer by ${user.username} (ID: ${user.id})`
+    );
+
+    try {
+      await this.balanceService.transferMoney(user.id, transferDto);
+
+      const response = {
+        message: `Successfully transferred $${transferDto.amount} to user ID ${transferDto.recipientId}`,
+      };
+
+      LoggingUtils.logOperation(
+        this.logger,
+        'Transfer Request',
+        `$${transferDto.amount} transferred successfully`,
+        'success'
+      );
+
+      return response;
+    } catch (error) {
+      LoggingUtils.logError(this.logger, 'Transfer Request', error, {
+        userId: user.id,
+        username: user.username,
+        recipientId: transferDto.recipientId,
+        amount: transferDto.amount,
+      });
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -79,10 +110,32 @@ export class BalanceController {
       },
     },
   })
-  @ApiUnauthorizedResponse({ description: 'Требуется авторизация' })
+  @ApiUnauthorizedResponse({ description: 'Неверные учетные данные' })
   @ApiNotFoundResponse({ description: 'Пользователь не найден' })
   async getBalance(@User() user: CurrentUser): Promise<{ balance: number }> {
-    const balance = await this.balanceService.getBalance(user.id);
-    return { balance };
+    LoggingUtils.logOperation(
+      this.logger,
+      'Balance Request',
+      `GET /balance by ${user.username} (ID: ${user.id})`
+    );
+
+    try {
+      const balance = await this.balanceService.getBalance(user.id);
+
+      LoggingUtils.logOperation(
+        this.logger,
+        'Balance Request',
+        `Balance retrieved: $${balance}`,
+        'success'
+      );
+
+      return { balance };
+    } catch (error) {
+      LoggingUtils.logError(this.logger, 'Balance Request', error, {
+        userId: user.id,
+        username: user.username,
+      });
+      throw error;
+    }
   }
 }

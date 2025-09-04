@@ -1,0 +1,6 @@
+export const JOB_OPTIONS = {
+  ATTEMPTS: 3,
+  BACKOFF_DELAY: 2000,
+  REMOVE_ON_COMPLETE: 10,
+  REMOVE_ON_FAIL: 5,
+} as const;
