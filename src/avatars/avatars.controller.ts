@@ -26,7 +26,7 @@ import { AvatarsService } from './avatars.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { IUploadedMulterFile } from 'src/providers/files/s3/interfaces/upload-file.interface';
 import { User } from '../decorators/user.decorator';
-import { CurrentUser } from '../users/interfaces/current-user.interface';
+import { CurrentUser } from '../shared/interfaces';
 import { FileValidationPipe } from './pipes/file-validation.pipe';
 import { AvatarResponseDto } from './dto/avatar-response.dto';
 import { toAvatarResponseDto } from './utils/avatar-mapper.utils';

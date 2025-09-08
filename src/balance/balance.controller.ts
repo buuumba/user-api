@@ -14,7 +14,7 @@ import { BalanceService } from './balance.service';
 import { TransferMoneyDto } from './dto/transfer-money.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorator';
-import { CurrentUser } from '../users/interfaces/current-user.interface';
+import { CurrentUser } from '../shared/interfaces';
 import { LoggingUtils } from '../common/utils/logging.utils';
 
 @ApiTags('Balance')

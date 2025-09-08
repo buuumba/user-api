@@ -2,7 +2,7 @@ import { plainToInstance } from 'class-transformer';
 import { User } from '../entities/user.entity';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { PaginatedUsersResponseDto } from '../dto/paginated-users-response.dto';
-import { PaginatedResult } from '../interfaces/paginated-result.interface';
+import { PaginatedResult } from '../../shared/interfaces';
 
 //Преобразует User entity в UserResponseDto через plainToInstance
 

@@ -30,7 +30,7 @@ import { UserResponseDto } from './dto/user-response.dto';
 import { PaginatedUsersResponseDto } from './dto/paginated-users-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorator';
-import { CurrentUser } from './interfaces/current-user.interface';
+import { CurrentUser } from '../shared/interfaces';
 import {
   toUserResponseDto,
   toUserResponseDtoSafe,

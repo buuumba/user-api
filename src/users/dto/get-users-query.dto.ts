@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PAGINATION_DEFAULTS } from '../constants/pagination.constants';
+import { PAGINATION_DEFAULTS } from '../../shared/constants/pagination.constants';
 
 export class GetUsersQueryDto {
   @ApiPropertyOptional({

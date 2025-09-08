@@ -7,8 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PAGINATION_DEFAULTS } from './constants/pagination.constants';
-import { PaginatedResult } from './interfaces/paginated-result.interface';
+import { PAGINATION_DEFAULTS } from '../shared/constants/pagination.constants';
+import { PaginatedResult } from '../shared/interfaces';
 import * as argon2 from 'argon2';
 
 @Injectable()
