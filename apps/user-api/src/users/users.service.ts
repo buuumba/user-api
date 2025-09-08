@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PAGINATION_DEFAULTS } from '../shared/constants/pagination.constants';
-import { PaginatedResult } from '../shared/interfaces';
+import { PaginatedResult } from '@app/shared';
 import * as argon2 from 'argon2';
 
 @Injectable()

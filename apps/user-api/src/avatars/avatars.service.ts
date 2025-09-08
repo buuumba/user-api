@@ -7,8 +7,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Avatar } from './entities/avatars.entity';
-import { IFileService } from 'src/providers/files/files.adapter';
-import { IUploadedMulterFile } from 'src/providers/files/s3/interfaces/upload-file.interface';
+import { IFileService } from '../providers/files/files.adapter';
+import { IUploadedMulterFile } from '../providers/files/s3/interfaces/upload-file.interface';
 
 @Injectable()
 export class AvatarsService {

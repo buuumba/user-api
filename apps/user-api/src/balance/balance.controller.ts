@@ -13,9 +13,9 @@ import {
 import { BalanceService } from './balance.service';
 import { TransferMoneyDto } from './dto/transfer-money.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { User } from '../decorators/user.decorator';
-import { CurrentUser } from '../shared/interfaces';
-import { LoggingUtils } from '../common/utils/logging.utils';
+import { User } from '@app/common';
+import { CurrentUser } from '@app/shared';
+import { LoggingUtils } from '@app/common';
 
 @ApiTags('Balance')
 @ApiBearerAuth('JWT-Auth')

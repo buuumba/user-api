@@ -1,5 +1,5 @@
 import { Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
-import { IUploadedMulterFile } from 'src/providers/files/s3/interfaces/upload-file.interface';
+import { IUploadedMulterFile } from '../providers/files/s3/interfaces/upload-file.interface';
 
 @Injectable()
 export class FileValidationPipe implements PipeTransform {

@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional';
 import { User } from '../users/entities/user.entity';
 import { TransferMoneyDto } from './dto/transfer-money.dto';
-import { LoggingUtils } from '../common/utils/logging.utils';
+import { LoggingUtils } from '@app/common';
 
 @Injectable()
 export class BalanceService {

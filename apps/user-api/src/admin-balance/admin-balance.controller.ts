@@ -21,12 +21,12 @@ import {
 
 import { AdminBalanceService } from './admin-balance.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { User } from '../decorators/user.decorator';
-import { CurrentUser } from '../shared/interfaces';
+import { User } from '@app/common';
+import { CurrentUser } from '@app/shared';
 import { ResetBalanceDto } from './dto/reset-balance.dto';
 import { ScheduleJobResponseDto } from './dto/schedule-job-response.dto';
 import { JobStatusResponseDto } from './dto/job-status-response.dto';
-import { LoggingUtils } from '../common/utils/logging.utils';
+import { LoggingUtils } from '@app/common';
 
 @ApiTags('Admin Balance')
 @ApiBearerAuth('JWT-Auth')

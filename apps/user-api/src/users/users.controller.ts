@@ -29,14 +29,14 @@ import { GetUsersQueryDto } from './dto/get-users-query.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { PaginatedUsersResponseDto } from './dto/paginated-users-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { User } from '../decorators/user.decorator';
-import { CurrentUser } from '../shared/interfaces';
+import { User } from '@app/common';
+import { CurrentUser } from '@app/shared';
 import {
   toUserResponseDto,
   toUserResponseDtoSafe,
   toPaginatedUsersResponse,
 } from './utils/user-mapper.utils';
-import { ProfileCacheInterceptor } from 'src/cache/interceptors/profile-cache.interceptor';
+import { ProfileCacheInterceptor } from '../cache/interceptors/profile-cache.interceptor';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT-Auth')

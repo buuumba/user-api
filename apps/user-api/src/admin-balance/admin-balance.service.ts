@@ -11,7 +11,7 @@ import {
 } from './interfaces/balance-job.interface';
 import { ScheduleJobResponseDto } from './dto/schedule-job-response.dto';
 import { JobStatusResponseDto } from './dto/job-status-response.dto';
-import { LoggingUtils } from '../common/utils/logging.utils';
+import { LoggingUtils } from '@app/common';
 
 @Injectable()
 export class AdminBalanceService {
