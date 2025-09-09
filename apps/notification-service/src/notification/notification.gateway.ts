@@ -9,12 +9,9 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { PingMessage, PongMessage } from './interfaces/websocket.interface';
+import { LoggingUtils } from '@app/common';
 
-@WebSocketGateway({
-  cors: {
-    origin: '*',
-  },
-})
+@WebSocketGateway()
 export class NotificationGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -24,21 +21,30 @@ export class NotificationGateway
   server: Server;
 
   afterInit(server: Server) {
-    this.logger.log('WebSocket Gateway initialized');
+    LoggingUtils.logOperation(
+      this.logger,
+      'WebSocket Gateway',
+      'initialized',
+      'success'
+    );
   }
 
   async handleConnection(client: Socket) {
-    this.logger.log(`Client connected: ${client.id}`);
+    LoggingUtils.logWebSocketEvent(this.logger, 'connected', client.id);
   }
 
   async handleDisconnect(client: Socket) {
-    this.logger.log(`Client disconnected: ${client.id}`);
+    LoggingUtils.logWebSocketEvent(this.logger, 'disconnected', client.id);
   }
 
   @SubscribeMessage('ping')
   handlePing(client: Socket, data: PingMessage): PongMessage {
-    this.logger.log(`Message received from client id: ${client.id}`);
-    this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+    LoggingUtils.logWebSocketEvent(
+      this.logger,
+      'ping received',
+      client.id,
+      data
+    );
 
     return {
       message: data.message,
@@ -48,8 +54,12 @@ export class NotificationGateway
 
   @SubscribeMessage('notification')
   handleNotification(client: Socket, data: any): void {
-    this.logger.log(`Notification received from client id: ${client.id}`);
-    this.logger.debug(`Notification data: ${JSON.stringify(data)}`);
+    LoggingUtils.logWebSocketEvent(
+      this.logger,
+      'notification received',
+      client.id,
+      data
+    );
 
     this.server.emit('notification', {
       from: client.id,

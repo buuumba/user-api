@@ -76,4 +76,17 @@ export class LoggingUtils {
   ): void {
     logger.log(`📊 ${operation} stats: ${JSON.stringify(stats)}`);
   }
+
+  /**
+   * Логирует WebSocket события
+   */
+  static logWebSocketEvent(
+    logger: Logger,
+    event: string,
+    clientId: string,
+    data?: any
+  ): void {
+    const dataStr = data ? ` | Data: ${JSON.stringify(data)}` : '';
+    logger.log(`🔌 WebSocket ${event} | Client: ${clientId}${dataStr}`);
+  }
 }

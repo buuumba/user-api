@@ -2,7 +2,11 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declaration": false,
-    "outDir": "../../dist/apps/notification-service"
+    "outDir": "../../dist/apps/notification-service",
+    "paths": {
+      "@app/common": ["../../libs/common/src"],
+      "@app/shared": ["../../libs/shared/src"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
